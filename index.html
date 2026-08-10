@@ -770,17 +770,37 @@
                 right: 0;
             }
             /* --- MOBIELE VERBETERINGEN VOOR DE OVERZICHTSKAART --- */
-            .overview-map-section {
-                min-height: auto !important; /* Voorkomt extreme hoogte op mobiel */
-                margin-bottom: 24px;
-                padding-top: 16px;
-                padding-bottom: 16px;
+            .overview-map-section {                
+                min-height: auto !important;
+                width: 100%;
+                margin: 0 0 24px 0;
+                padding: 16px 0 20px;
+                overflow: hidden;
+            }
+            .overview-map-section h2 {
+                padding: 0 16px;
+                font-size: 1.5em;
+            }
+
+            .overview-map-section p {
+                padding: 8px 16px 16px;
+                margin: 0;
+                line-height: 1.45;
             }
 
             #main-overview-map {
-                height: 350px; /* Comfortabele hoogte voor mobiel */
-               /* border-radius: 12px;*/
+                width: 100%;
+                height: 420px;
+                border-radius: 0;
+                touch-action: pan-x pan-y;
             }
+
+            /* Leaflet controls blijven bereikbaar met één hand. */
+            #main-overview-map .leaflet-control-zoom {
+                margin-top: 12px;
+                margin-right: 12px;
+            }
+           
        }
     </style>
 </head>
@@ -954,8 +974,11 @@
         const isMobile = window.innerWidth <= 640;
         const mainOverviewMap = L.map('main-overview-map', {
             zoomControl: true,
-            dragging: !L.Browser.mobile, // Schakelt pannen met 1 vinger uit op mobiel
-            tap: !L.Browser.mobile
+            dragging: true,
+            touchZoom: true,
+            doubleClickZoom: true,
+            scrollWheelZoom: false,
+            tap: true
         }).setView([52.3936, 4.9009], 12);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
             maxZoom: 19,
@@ -1019,8 +1042,13 @@
 
                 // Pas het kaartbeeld automatisch aan de grenzen van alle kranen aan
                 if (allMarkersGroup.getLayers().length > 0) {
-                    mainOverviewMap.fitBounds(allMarkersGroup.getBounds().pad(0.1));
-                }
+                    mainOverviewMap.fitBounds(allMarkersGroup.getBounds().pad(0.12), {
+                            maxZoom: 15,
+                            animate: false
+                        });
+                    }
+                // Leaflet opnieuw laten berekenen nadat de kaart zichtbaar is.
+                requestAnimationFrame(() => mainOverviewMap.invalidateSize());
 
                 // --- 2. RENDER ENKEL KRANEN MET FOTO IN DE RASTER-CARDS ---
                 const kranenMetFoto = data.filter(item => item.foto && String(item.foto).trim() !== "");
@@ -1187,7 +1215,21 @@
                 console.error('Fout details:', error);
                 document.getElementById('container').innerHTML = `<p style="color:#ffffff; text-align:center;">Fout bij het laden van kranen_def.json: ${error.message}</p>`;
             });
+        let overviewResizeTimer;
 
+        window.addEventListener('resize', () => {
+            clearTimeout(overviewResizeTimer);
+
+            overviewResizeTimer = setTimeout(() => {
+                mainOverviewMap.invalidateSize({ pan: false });
+            }, 150);
+        });
+
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                mainOverviewMap.invalidateSize({ pan: false });
+            }, 300);
+        });
         function openModal(fid) {
             document.getElementById('kraanFid').value = `${fid}`;
             document.getElementById('adoptModal').style.display = 'flex';
