@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watertapkranen Amsterdam-Noord</title>
+    
+    <!-- Google Fonts & Leaflet CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="shortcut icon" href="fav/512x512.png" type="image/x-icon">
+
+    <!--browser icons-->
+    <link rel="icon" type="image/png" sizes="16x16" href="fav/16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="fav/32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="fav/64x64.png">
+    <!--homescreen-shortcut.-->
+    <link rel="apple-touch-icon" sizes="180x180" href="fav/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
+
+    <style>
+        :root {
+            /* Cyan & Blauw als harde basis */
+            --accent-cyan: #38BDF8;
+            --accent-blue: #3B82F6;
+            
+            /* Achtergronden en verlopen opgebouwd uit Cyan & Blauw */
+            --bg-base: #1d4ed8; 
+            --gradient-bg: linear-gradient(135deg, #0284c7 0%, #3b82f6 50%, #1d4ed8 100%);
+            
+            --card-bg: rgba(255, 255, 255, 0.92);
+            --card-border: rgba(56, 189, 248, 0.4);
+            --card-hover-border: #38BDF8;
+            
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            
+            --gradient-btn: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-blue) 100%);
+            --gradient-btn-hover: linear-gradient(135deg, #0284c7 0%, #1d4ed8 100%);
+            
+            --glow-cyan: 0 10px 25px rgba(56, 189, 248, 0.4);
+            --glow-card: 0 20px 40px rgba(2, 132, 199, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin:0;
+            padding:0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.35) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.4) 0%, transparent 50%),
+                var(--gradient-bg);
+            background-attachment: fixed;
+            margin: 0;
+            /*padding: 100px 24px 0 24px; /* Ruimte voor de fixed nav bovenin */
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- DOORZICHTIGE RESPONSIVE NAVIGATIEBALK --- */
+        .navbar {
+            position: static;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 999;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.20);
+            padding: 14px 24px;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: right;
+            align-items: center;
+            position: relative;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 40px;
+        }
+
+        .nav-links a {
+            color:#8fa9f0;
+            text-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #ffffff;
+        }
+
+        /* Hamburger Knop voor Mobiel */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 28px;
+            height: 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1001;
+            position: absolute;
+            right: 0;
+        }
+
+        .hamburger span {
+            width: 100%;
+            height: 3px;
+            background-color: #ffffff;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* Container voor inhoud zodat footer onderaan blijft kleven */
+        .page-content {
+            flex: 1 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3.2em;
+            margin: 0 auto 16px auto;
+            font-weight: 800;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-shadow: 0 4px 20px rgba(2, 132, 199, 0.5);
+        }
+
+        /* --- STYLING VOOR DE LEAD TEKST --- */
+        .hero-lead {
+            text-align: left;
+            max-width: 650px;
+            margin: 0 auto 35px auto;
+            font-size: 1.1em;
+            line-height: 1.7;
+            color: #0f172a;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 24px 32px;
+            border-radius: 20px;
+            border: 2px solid var(--accent-cyan);
+            box-shadow: 0 15px 35px rgba(2, 132, 199, 0.2);
+        }
+
+        /* --- HOOFD OVERZICHTSKAART STYLING --- */
+        .overview-map-section {
+            max-width: 1400px;
+            min-height: 100vh;
+            margin: 0 auto 50px auto;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            /*border-radius: 24px;
+            padding: 24px;
+            border: 2px solid var(--card-border);*/
+            border-top:#0284c7 8px solid; 
+            border-bottom: 8px solid var(--card-border);        
+            box-shadow: var(--glow-card);
+            padding-top: 32px;
+            padding-bottom: 32px;
+            margin-bottom: 32px;
+        }
+
+        .overview-map-section h2 {
+            margin: 0 0 16px 0;
+            font-size: 1.8em;
+            font-weight: 800;           
+            color: var(--bg-base);
+            text-align: center;
+        }
+        .overview-map-section p {
+             text-align: center;
+             padding:20px;
+             color: var(--bg-base);
+             font-weight: bold;
+              color: var(--text-primary);
+            
+        }
+        #main-overview-map {
+            width: 100%;
+            height: 550px;
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            z-index: 1;
+            
+        }
+
+        /* Styling van de popups op de hoofdkaart */
+        .leaflet-popup-content-wrapper {
+            border-radius: 16px;
+            padding: 8px;
+            border: 1px solid var(--accent-cyan);
+        }
+
+        .map-popup-content {
+            text-align: center;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .map-popup-content img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .map-popup-content h3 {
+            margin: 0 0 6px 0;
+            color: #0284c7;
+            font-size: 1.1em;
+            font-weight: 800;
+        }
+
+        .map-popup-content button {
+            background: var(--gradient-btn);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.85em;
+            text-transform: uppercase;
+        }
+
+        .grid-container {
+          
+            display: flex;
+            flex-direction: row;
+            overflow-x: auto;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto 60px auto;
+            padding: 40px 40px 40px 40px;         
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            
+        }
+        .grid-container::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.2);
+            border-radius: 10px;
+            margin:  0 40px 0 40px;
+        }
+
+        .grid-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .grid-container::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-cyan);
+        }
+        .card {
+           /* Maximaal 3 kaarten in beeld (100% min 2x gap van 20px = 40px verdeeld over 3 items) */
+            flex: 0 0 calc((100% - 20px) / 4); 
+            min-width: 300px; /* Voorkomt dat kaarten op kleine schermen te smal worden */
+            scroll-snap-align: start;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 2px solid var(--card-border);
+            box-shadow: var(--glow-card);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+           
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--card-hover-border);
+            box-shadow: var(--glow-card), var(--glow-cyan);
+        }
+
+        .fid-title {
+            /*margin: 0 0 16px 0;*/
+            font-size: 1.25em;
+            font-weight: 800;
+            text-align: center;
+            /*background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%);*/
+            color: #0284c7;
+            /*border: 1px solid var(--accent-cyan);*/
+            padding: 10px;
+            /*border-radius: 8px;*/
+            font-family: 'JetBrains Mono', monospace;
+           
+        }
+
+        /* --- CONTAINER VOOR FOTO + KAART OVERLAY --- */
+        .media-container {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            margin-bottom: 18px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            background-color: #e0f2fe;
+        }
+
+        .media-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover .media-container img {
+            transform: scale(1.04);
+        }
+
+        /* --- MINI KAART HOEK OVERLAY --- */
+        .map-wrapper {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            width: 80px;
+            height: 80px;
+            border-radius: 14px;
+            border: 2px solid var(--accent-cyan);
+            box-shadow: 0 8px 24px rgba(2, 132, 199, 0.4);
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        .map-wrapper:hover {
+            transform: scale(1.15);
+            border-color: var(--accent-blue);
+            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.6);
+        }
+
+        .map-container {
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .map-badge {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(4px);
+            color: #0284c7;
+            font-size: 0.65em;
+            padding: 3px 6px;
+            border-radius: 6px;
+            font-weight: 700;
+            pointer-events: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            z-index: 11;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid var(--accent-cyan);
+        }
+
+        .map-wrapper.expanded {
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 0;
+            border: none;
+        }
+
+        .map-wrapper.expanded .map-container {
+            pointer-events: auto;
+        }
+
+        .details {
+            margin-top: 8px;
+            font-size: 0.9em;
+            line-height: 1.6;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .details strong {
+            display: block;
+            margin-bottom: 2px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.75em;
+            letter-spacing: 1.2px;
+            font-weight: 700;
+        }
+
+        .coordinates {
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid var(--accent-cyan);
+            color: #0284c7;
+            padding: 5px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            margin-bottom: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5px;
+            text-align: left;
+            font-weight: 600;
+            
+        }
+
+        .adopt-btn {
+            background: var(--gradient-btn);
+            color: #FFFFFF;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.95em;
+            width: 100%;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+            text-transform: uppercase;
+        }
+
+        .adopt-btn:hover {
+            background: var(--gradient-btn-hover);
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* --- EXTRA INFO SECTIE --- */
+        .divider {
+            background-color: #e0f2fe;
+             padding: 0px;
+        }
+        .divider2{
+                background-color:linear-gradient(135deg, #0284c7 0%, #3b82f6 50%, #1d4ed8 100%);
+        }
+        .info-section {
+            max-width: 900px;
+            margin: 60px auto;
+            
+            padding: 40px;
+            border-radius: 24px;
+            border: 2px solid var(--card-border);
+            box-shadow: var(--glow-card);
+            line-height: 1.7;
+            color: var(--text-secondary);
+        }
+
+        .info-section h2 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 2em;
+            font-weight: 800;
+            color: var(--bg-base);
+            text-align: center;
+        }
+
+        .info-section p {
+            margin-bottom: 16px;
+            font-size: 1.05em;
+        }
+
+        .info-section ul {
+            padding-left: 20px;
+            margin-bottom: 24px;
+        }
+
+        .info-section li {
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        /* --- CONTACTFORMULIER SECTIE --- */
+        .contact-section {
+            max-width: 650px;
+            margin: 40px auto 60px auto;
+            background: var(--card-bg);            
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 36px;
+            border-radius: 24px;
+            border: 2px solid var(--card-border);
+            box-shadow: var(--glow-card);
+        }
+
+        .contact-section h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 1.8em;
+            font-weight: 800;
+            color: var(--bg-base);
+            text-align: center;
+        }
+
+        .contact-section p {
+            text-align: left;
+            color: var(--text-secondary);
+            margin-top: 0;
+            margin-bottom: 24px;
+            font-size: 0.95em;
+            font-weight: bold;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            box-sizing: border-box;
+            background: rgba(240, 249, 255, 0.8);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: 600;
+            color: var(--text-primary);
+            outline: none;
+            transition: all 0.2s;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 110px;
+        }
+
+        .form-group textarea:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3);
+        }
+       
+        .verberg > span:nth-child(2) {
+	        display: none;
+        }
+
+
+        /* --- FOOTER STYLING --- */
+        .site-footer {
+            flex-shrink: 0;
+            text-align: center;
+            padding: 24px;
+            margin-top: 6px;
+            margin-bottom: 6px;
+            color: #f4f4f4;
+            font-size: 0.75em;
+            font-weight: 400;
+            max-width: 1400px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+           
+             
+        }
+
+        .site-footer a {
+            color: #ffffff;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            transition: color 0.2s;
+        }
+
+        .site-footer a:hover {
+            color: var(--accent-cyan);
+        }
+
+        /* --- MODAL POPUP --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: #ffffff;
+            padding: 36px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 460px;
+            border: 2px solid var(--accent-cyan);
+            box-shadow: 0 25px 50px -12px rgba(2, 132, 199, 0.5), var(--glow-cyan);
+            position: relative;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            color: var(--text-primary);
+            font-size: 1.75em;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color 0.2s;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        .close-btn:hover {
+            color: var(--text-primary);
+            background: rgba(56, 189, 248, 0.2);
+        }
+
+        .modal-text {
+            background: rgba(56, 189, 248, 0.08);
+            border-left: 3px solid var(--accent-cyan);
+            padding: 14px 16px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            margin: 20px 0 24px 0;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 0.75em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            box-sizing: border-box;
+            background: rgba(240, 249, 255, 0.8);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: 600;
+            color: var(--text-primary);
+            outline: none;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3);
+        }
+
+        .submit-btn {
+            background: var(--gradient-btn);
+            color: #FFFFFF;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.95em;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 8px;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+            transition: all 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: var(--gradient-btn-hover);
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6);
+        }
+
+        .leaflet-interactive {
+            filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.8));
+        }
+
+        /* --- MEDIA QUERIES VOOR MOBIELE NAVIGATIE --- */
+        @media (max-width: 640px) {
+            body {
+                padding-top: 80px;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 70%;
+                height: 100vh;
+                background: rgba(15, 23, 42, 0.95);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 32px;
+                transition: right 0.3s ease;
+                border-left: 1px solid var(--card-border);
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            #main-overview-map {
+                height: 320px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- DOORZICHTIGE RESPONSIVE MENUBALK -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <button class="hamburger" id="hamburgerBtn" aria-label="Menu openen">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#overzichtskaart">Overzicht</a></li>
+                <li><a href="#info">Info</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-content" id="home">
+        <h1>Adopteer een waterbakje</h1>
+        <p class="hero-lead">Het is vaker langdurig droog. Dieren lijden dorst! 
+            Adopteer een waterbakje. 
+            Zet het op het rooster van een watertappunt en check bij droogte of hij er nog staat. 
+            Het eerste bakje krijg je van ons.</p>
+
+      
+        <!-- GRID CONTAINER KRANEN AMSTERDAM-NOORD -->
+        <div id="container" class="grid-container">Laden van netwerkgegevens...</div>
+    </div>
+
+    <!-- EXTRA INFO SECTIE -->
+        <div class="divider">
+            <section class="info-section" id="info">
+                <h2>Hoe werkt het adopteren?</h2>
+                <p>In de zomermaanden hebben vogels, insecten en kleine stadsdieren zoals egels het erg moeilijk om vers drinkwater te vinden. 
+                    Voor honden wordt vaak een bak neergezet, maar die is meestal te hoog voor egels. Met het adopteren van een laag waterbakje bij een watertapkraan help je de lokale stadsnatuur een handje!</p>
+                
+                <p><strong>Wat verwachten we van een adopter:</strong></p>
+                <ul>
+                    <li>Je plaatst het waterbakje aan de zijkant van het rooster bij jouw gekozen watertapkraan.</li>
+                    <li>Bij droog weer controleer je regelmatig of er nog voldoende vers water in het bakje staat. </li>
+                    <li>Maak het bakje af en toe even schoon om te zorgen voor een gezonde drinkplek.</li>
+                    <li>Mocht het bakje beschadigd zijn of verdwijnen, geef ons dan even een seintje via het contactformulier.</li>
+                </ul>
+                
+                <p>Kies een kraan bij jou in de buurt uit het bovenstaande overzicht en meld je direct aan. Samen maken we de stad een stukje diervriendelijker!</p>
+            </section>
+        </div>
+
+    
+ 
+    <!-- VERZAMELKAART MET ALLE KRANEN -->
+       <div class="divider">
+            <section class="overview-map-section" id="overzichtskaart">
+                <h2>Alle Watertapkranen</h2>
+                <p>Staat jouw kraan er niet bij? Laat het weten, dan regelen we het. </p>
+                <div id="main-overview-map"></div>
+            </section>
+        </div>
+   
+
+    <!-- CONTACTFORMULIER -->
+    <div class="divider">
+        <section class="contact-section" id="contact">
+            <h2>Neem contact op</h2>
+            <p>Heb je vragen of opmerkingen over het adopteren van een waterbakje? Vul het contactformulier in of stuur een bericht naar 
+                <a href="mailto:" class="verberg">watertappunt@<span>proton.</span><span>Amsterdam-Noord.</span>me </a>.</p>
+            <form id="contactForm" onsubmit="verwerkContactVerzenden(event)">
+                <div class="form-group">
+                    <label for="contactNaam">Naam:*</label>
+                    <input type="text" id="contactNaam" name="contactNaam" required placeholder="Je naam" pattern="[a-zA-Zà-ÿÀ-ß\s-]+" 
+                    title="Gebruik alleen letters, spaties en verbindingsstreepjes (-)"
+                    oninput="this.value = this.value.replace(/[^a-zA-Zà-ÿÀ-ß\s-]/g, '')">
+                </div>
+
+                <div class="form-group">
+                    <label for="contactEmail">E-mailadres:*</label>
+                    <input type="email" id="contactEmail" name="contactEmail" required placeholder="naam@voorbeeld.nl" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                    title="Voer een geldig e-mailadres in (bijv. naam@voorbeeld.nl)"
+                    oninput="this.value = this.value.replace(/[^a-zA-Z0-9@._+-]/g, '')">
+                </div>
+                
+                <div class="form-group">
+                    <label for="contactBericht">Bericht:*</label>
+                    <textarea id="contactBericht" name="contactBericht" required placeholder="Typ hier je bericht..."
+                    oninput="this.value = this.value.replace(/[^a-zA-Z0-9à-ÿ\s.,?!\-]/g, '')"></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Bericht Verzenden</button>
+            </form>
+        </section>
+    </div>
+    <!-- FOOTER ONDERAAN IN HET MIDDEN -->
+    <footer class="site-footer">
+        <p>&copy; 2026 Tmra</p>
+    </footer>
+
+    <!-- POPUP FORMULIER -->
+    <div id="adoptModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-btn" onclick="sluitModal()">&times;</span>
+            <h2>Doe mij maar een bakkie!</h2>
+            
+            <div class="modal-text">
+                Super dat je een waterbakje wilt adopteren. Het enige dat je hoeft te doen is dagelijks checken of het bakje er nog staat, en of het gevuld is met water.
+            </div>
+
+            <form id="adoptForm" onsubmit="verwerkVerzenden(event)">
+                <div class="form-group">
+                    <label for="kraanFid">Gekozen Kraan ID:</label>
+                    <input type="text" id="kraanFid" name="kraanFid" readonly style="color: #0284c7; font-weight: 700; background: #e0f2fe;">
+                </div>
+
+                <div class="form-group">
+                    <label for="naam">Naam:*</label>
+                    <input type="text" id="naam" name="naam" required placeholder="Je naam" pattern="[a-zA-Zà-ÿÀ-ß\s-]+" 
+    title="Gebruik alleen letters, spaties en verbindingsstreepjes (-)"
+    oninput="this.value = this.value.replace(/[^a-zA-Zà-ÿÀ-ß\s-]/g, '')">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">E-mailadres:*</label>
+                    <input type="email" id="email" name="email" required placeholder="naam@voorbeeld.nl" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+    title="Voer een geldig e-mailadres in (bijv. naam@voorbeeld.nl)"
+    oninput="this.value = this.value.replace(/[^a-zA-Z0-9@._+-]/g, '')">
+                </div>
+
+                <button type="submit" class="submit-btn">Aanmelding Verzenden</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Leaflet JS voor de kaarten -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // --- HAMBURGER MENU INTERACTIE ---
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const navLinks = document.getElementById('navLinks');
+
+        hamburgerBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Sluit het mobiele menu zodra er op een link wordt geklikt
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        function parseCoordinaat(val, type) {
+            if (val === undefined || val === null || val === '') return NaN;
+            
+            let str = String(val).replace(',', '.').trim();
+            
+            if (!str.includes('.')) {
+                if (type === 'lat' && str.startsWith('52')) {
+                    str = str.substring(0, 2) + '.' + str.substring(2);
+                } else if (type === 'lng' && str.startsWith('4')) {
+                    str = str.substring(0, 1) + '.' + str.substring(1);
+                }
+            }
+            
+            return parseFloat(str);
+        }
+
+        // --- HOOFD OVERZICHTSKAART INITIALISEREN ---
+        const mainOverviewMap = L.map('main-overview-map', {
+            zoomControl: true
+        }).setView([52.3936, 4.9009], 12);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(mainOverviewMap);
+
+        const allMarkersGroup = L.featureGroup().addTo(mainOverviewMap);
+
+        fetch('kranen_def.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Status code: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const container = document.getElementById('container');
+                container.innerHTML = '';
+
+                // --- 1. VERWERK ALLE KRANEN OP DE HOOFDOVERZICHTSKAART ---
+                data.forEach(kraan => {
+                    const latParsed = parseCoordinaat(kraan.latitude, 'lat');
+                    const lngParsed = parseCoordinaat(kraan.longitude, 'lng');
+
+                    if (!isNaN(latParsed) && !isNaN(lngParsed)) {
+                        const fidRaw = kraan.FID !== undefined ? String(kraan.FID) : '';
+                        let fidGetal = 'ONBEKEND';
+                        if (fidRaw.includes('.')) {
+                            fidGetal = fidRaw.split('.').pop();
+                        } else if (fidRaw !== '') {
+                            fidGetal = fidRaw;
+                        }
+
+                        let fotoNaam = kraan.foto ? String(kraan.foto).trim() : '';
+                        if (fotoNaam.startsWith('/')) fotoNaam = fotoNaam.substring(1);
+                        if (fotoNaam && !fotoNaam.startsWith('img/')) fotoNaam = 'img/' + fotoNaam;
+
+                        // Marker toevoegen op de overzichtskaart
+                        const marker = L.circleMarker([latParsed, lngParsed], {
+                            radius: 8,
+                            color: '#FFFFFF',
+                            fillColor: '#0284c7',
+                            fillOpacity: 0.9,
+                            weight: 2
+                        });
+
+                        const popupHtml = `
+                            <div class="map-popup-content">
+                                <h3>Kraan ${fidGetal}</h3>
+                                ${fotoNaam ? `<img src="${fotoNaam}" alt="Kraan ${fidGetal}" onerror="this.style.display='none'">` : ''}   
+                                <div class="coordinates">LAT: ${latParsed} | LNG: ${lngParsed}</div>                            
+                                <p style="font-size:0.8em; margin: 4px 0 10px 0; color: #475569;">${kraan.beschrijvi || ''}</p>                                
+                                <button onclick="openModal('${fidGetal}')">Adopteer Kraan ${fidGetal}</button>
+                            </div>
+                        `;
+
+                        marker.bindPopup(popupHtml);
+                        allMarkersGroup.addLayer(marker);
+                    }
+                });
+
+                // Pas het kaartbeeld automatisch aan de grenzen van alle kranen aan
+                if (allMarkersGroup.getLayers().length > 0) {
+                    mainOverviewMap.fitBounds(allMarkersGroup.getBounds().pad(0.1));
+                }
+
+                // --- 2. RENDER ENKEL KRANEN MET FOTO IN DE RASTER-CARDS ---
+                const kranenMetFoto = data.filter(item => item.foto && String(item.foto).trim() !== "");
+
+                if (kranenMetFoto.length === 0) {
+                    container.innerHTML = "<p style='text-align:center; color:#ffffff;'>Geen objecten met foto's gevonden.</p>";
+                    return;
+                }
+
+                kranenMetFoto.forEach((kraan, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+
+                    const fidRaw = kraan.FID !== undefined ? String(kraan.FID) : '';
+                    let fidGetal = 'ONBEKEND';
+
+                    if (fidRaw.includes('.')) {
+                        const parts = fidRaw.split('.');
+                        fidGetal = parts[parts.length - 1];
+                    } else if (fidRaw !== '') {
+                        fidGetal = fidRaw;
+                    }
+
+                    const topContent = document.createElement('div');
+
+                    // --- FID TITEL ---
+                    const fidTitle = document.createElement('h2');
+                    fidTitle.className = 'fid-title';
+                    fidTitle.textContent = `Kraan ${fidGetal}`;
+                    topContent.appendChild(fidTitle);
+
+                    // --- MEDIA CONTAINER (FOTO + OVERLAY KAART) ---
+                    const mediaContainer = document.createElement('div');
+                    mediaContainer.className = 'media-container';
+
+                    let fotoNaam = String(kraan.foto).trim();
+                    if (fotoNaam.startsWith('/')) fotoNaam = fotoNaam.substring(1);
+                    if (!fotoNaam.startsWith('img/')) fotoNaam = 'img/' + fotoNaam;
+
+                    const img = document.createElement('img');
+                    img.src = fotoNaam;
+                    img.alt = `Kraan #${fidGetal}`;
+                    img.onerror = function() {
+                        this.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><rect width='100%' height='100%' fill='%23e0f2fe'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%230284c7' font-family='sans-serif' font-size='16' font-weight='bold'>FOTO NIET GEVONDEN</text></svg>";
+                    };
+                    mediaContainer.appendChild(img);
+
+                    // Mini Kaart Floating Wrapper
+                    const mapWrapper = document.createElement('div');
+                    mapWrapper.className = 'map-wrapper';
+                    mapWrapper.title = "Klik om de kaart te vergroten";
+
+                    const mapDiv = document.createElement('div');
+                    mapDiv.className = 'map-container';
+                    const mapId = `map-${index}`;
+                    mapDiv.id = mapId;
+                    mapWrapper.appendChild(mapDiv);
+
+                    const badge = document.createElement('div');
+                    badge.className = 'map-badge';
+                    badge.textContent = '📍 Kaart';
+                    mapWrapper.appendChild(badge);
+
+                    mediaContainer.appendChild(mapWrapper);
+                    topContent.appendChild(mediaContainer);
+
+                    // --- COÖRDINATEN ---
+                    const latParsed = parseCoordinaat(kraan.latitude, 'lat');
+                    const lngParsed = parseCoordinaat(kraan.longitude, 'lng');
+
+                    const latDisplay = !isNaN(latParsed) ? latParsed : (kraan.latitude || 'Onbekend');
+                    const lngDisplay = !isNaN(lngParsed) ? lngParsed : (kraan.longitude || 'Onbekend');
+
+                    const coordsDiv = document.createElement('div');
+                    coordsDiv.className = 'coordinates';
+                    coordsDiv.innerHTML = `LAT: ${latDisplay} | LNG: ${lngDisplay}`;
+                    topContent.appendChild(coordsDiv);
+
+                    card.appendChild(topContent);
+
+                    // --- DETAILS ---
+                    const detailsDiv = document.createElement('div');
+                    detailsDiv.className = 'details';
+                    const beschrijvingTekst = kraan.beschrijvi || 'Geen extra informatie beschikbaar.';
+                    detailsDiv.innerHTML = `<strong>Details</strong>${beschrijvingTekst}`;
+                    topContent.appendChild(detailsDiv);
+
+                    
+
+                    // --- KNOP ---
+                    const adoptBtn = document.createElement('button');
+                    adoptBtn.className = 'adopt-btn';
+                    adoptBtn.textContent = 'Deze adopteer ik';
+                    adoptBtn.onclick = function() {
+                        openModal(fidGetal);
+                    };
+                    card.appendChild(adoptBtn);
+
+                    container.appendChild(card);
+
+                    // --- LEAFLET KAART & KLIK INTERACTIE VOOR LOSSE CARDS ---
+                    setTimeout(() => {
+                        const validLat = !isNaN(latParsed) ? latParsed : 52.3936;
+                        const validLng = !isNaN(lngParsed) ? lngParsed : 4.9009;
+
+                        const map = L.map(mapId, {
+                            zoomControl: false,
+                            attributionControl: false,
+                            doubleClickZoom: false
+                        }).setView([validLat, validLng], 14);
+
+                        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                            maxZoom: 19
+                        }).addTo(map);
+
+                        if (!isNaN(latParsed) && !isNaN(lngParsed)) {
+                            L.circleMarker([latParsed, lngParsed], {
+                                radius: 7,
+                                color: '#FFFFFF',
+                                fillColor: '#3B82F6',
+                                fillOpacity: 1,
+                                weight: 2.5
+                            }).addTo(map);
+                        }
+
+                        mapWrapper.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            
+                            const isExpanded = mapWrapper.classList.contains('expanded');
+
+                            if (!isExpanded) {
+                                mapWrapper.classList.add('expanded');
+                                mapWrapper.title = "Dubbelklik snel om de kaart te sluiten";
+                                badge.textContent = '✖ Dubbelklik om te sluiten';
+
+                                setTimeout(() => {
+                                    map.invalidateSize();
+                                    map.setView([validLat, validLng], 13);
+                                }, 300);
+                            }
+                        });
+
+                        mapWrapper.addEventListener('dblclick', function(e) {
+                            e.stopPropagation();
+
+                            const isExpanded = mapWrapper.classList.contains('expanded');
+
+                            if (isExpanded) {
+                                mapWrapper.classList.remove('expanded');
+                                mapWrapper.title = "Klik om de kaart te vergroten";
+                                badge.textContent = '📍 Kaart';
+
+                                setTimeout(() => {
+                                    map.invalidateSize();
+                                    map.setView([validLat, validLng], 15);
+                                }, 300);
+                            }
+                        });
+
+                    }, 50);
+                });
+            })
+            .catch(error => {
+                console.error('Fout details:', error);
+                document.getElementById('container').innerHTML = `<p style="color:#ffffff; text-align:center;">Fout bij het laden van kranen_def.json: ${error.message}</p>`;
+            });
+
+        function openModal(fid) {
+            document.getElementById('kraanFid').value = `${fid}`;
+            document.getElementById('adoptModal').style.display = 'flex';
+        }
+
+        function sluitModal() {
+            document.getElementById('adoptModal').style.display = 'none';
+            document.getElementById('adoptForm').reset();
+        }
+
+        function verwerkVerzenden(event) {
+            event.preventDefault();
+            const fid = document.getElementById('kraanFid').value;
+            const naam = document.getElementById('naam').value;
+            alert(`Bedankt ${naam}! Je aanvraag voor kraan ${fid} is verzonden.`);
+            sluitModal();
+        }
+
+        function verwerkContactVerzenden(event) {
+            event.preventDefault();
+            const naam = document.getElementById('contactNaam').value;
+            alert(`Bedankt ${naam}! Je bericht is succesvol verzonden. We nemen zo snel mogelijk contact met je op.`);
+            document.getElementById('contactForm').reset();
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('adoptModal');
+            if (event.target === modal) {
+                sluitModal();
+            }
+        }
+    </script>
+</body>
+</html>
