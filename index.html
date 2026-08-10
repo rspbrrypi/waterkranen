@@ -841,27 +841,25 @@
             <h2>Neem contact op</h2>
             <p>Heb je vragen of opmerkingen over het adopteren van een waterbakje? Vul het contactformulier in of stuur een bericht naar 
                 <a href="mailto:" class="verberg">watertappunt@<span>proton.</span><span>Amsterdam-Noord.</span>me </a>.</p>
-            <form id="contactForm" onsubmit="verwerkContactVerzenden(event)">
-                <div class="form-group">
-                    <label for="contactNaam">Naam:*</label>
-                    <input type="text" id="contactNaam" name="contactNaam" required placeholder="Je naam" pattern="[a-zA-Zà-ÿÀ-ß\s-]+" 
-                    title="Gebruik alleen letters, spaties en verbindingsstreepjes (-)"
-                    oninput="this.value = this.value.replace(/[^a-zA-Zà-ÿÀ-ß\s-]/g, '')">
-                </div>
+            <!--<form id="contactForm" onsubmit="verwerkContactVerzenden(event)">-->
+                <form id="contactForm" name="contact" method="POST" data-netlify="true">
+                    <input type="hidden" name="form-name" value="contact">
+                    <div class="form-group">
+        <label for="contactNaam">Naam:*</label>
+        <input type="text" id="contactNaam" name="contactNaam" required placeholder="Je naam">
+    </div>
 
-                <div class="form-group">
-                    <label for="contactEmail">E-mailadres:*</label>
-                    <input type="email" id="contactEmail" name="contactEmail" required placeholder="naam@voorbeeld.nl" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
-                    title="Voer een geldig e-mailadres in (bijv. naam@voorbeeld.nl)"
-                    oninput="this.value = this.value.replace(/[^a-zA-Z0-9@._+-]/g, '')">
-                </div>
-                
-                <div class="form-group">
-                    <label for="contactBericht">Bericht:*</label>
-                    <textarea id="contactBericht" name="contactBericht" required placeholder="Typ hier je bericht..."
-                    oninput="this.value = this.value.replace(/[^a-zA-Z0-9à-ÿ\s.,?!\-]/g, '')"></textarea>
-                </div>
-                <button type="submit" class="submit-btn">Bericht Verzenden</button>
+    <div class="form-group">
+        <label for="contactEmail">E-mailadres:*</label>
+        <input type="email" id="contactEmail" name="contactEmail" required placeholder="naam@voorbeeld.nl">
+    </div>
+    
+    <div class="form-group">
+        <label for="contactBericht">Bericht:*</label>
+        <textarea id="contactBericht" name="contactBericht" required placeholder="Typ hier je bericht..."></textarea>
+    </div>
+    <button type="submit" class="submit-btn">Bericht Verzenden</button>
+   
             </form>
         </section>
     </div>
@@ -880,27 +878,27 @@
                 Super dat je een waterbakje wilt adopteren. Het enige dat je hoeft te doen is dagelijks checken of het bakje er nog staat, en of het gevuld is met water.
             </div>
 
-            <form id="adoptForm" onsubmit="verwerkVerzenden(event)">
-                <div class="form-group">
-                    <label for="kraanFid">Gekozen Kraan ID:</label>
-                    <input type="text" id="kraanFid" name="kraanFid" readonly style="color: #0284c7; font-weight: 700; background: #e0f2fe;">
-                </div>
+           <form id="adoptForm" name="adoptie" method="POST" data-netlify="true">
+    <input type="hidden" name="form-name" value="adoptie">
 
-                <div class="form-group">
-                    <label for="naam">Naam:*</label>
-                    <input type="text" id="naam" name="naam" required placeholder="Je naam" pattern="[a-zA-Zà-ÿÀ-ß\s-]+" 
-    title="Gebruik alleen letters, spaties en verbindingsstreepjes (-)"
-    oninput="this.value = this.value.replace(/[^a-zA-Zà-ÿÀ-ß\s-]/g, '')">
-                </div>
+    <div class="form-group">
+        <label for="kraanFid">Gekozen Kraan ID:</label>
+        <input type="text" id="kraanFid" name="kraanFid" readonly style="color: #0284c7; font-weight: 700; background: #e0f2fe;">
+    </div>
 
-                <div class="form-group">
-                    <label for="email">E-mailadres:*</label>
-                    <input type="email" id="email" name="email" required placeholder="naam@voorbeeld.nl" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
-    title="Voer een geldig e-mailadres in (bijv. naam@voorbeeld.nl)"
-    oninput="this.value = this.value.replace(/[^a-zA-Z0-9@._+-]/g, '')">
-                </div>
+    <div class="form-group">
+        <label for="naam">Naam:*</label>
+        <input type="text" id="naam" name="naam" required placeholder="Je naam">
+    </div>
 
-                <button type="submit" class="submit-btn">Aanmelding Verzenden</button>
+    <div class="form-group">
+        <label for="email">E-mailadres:*</label>
+        <input type="email" id="email" name="email" required placeholder="naam@voorbeeld.nl">
+    </div>
+
+    <button type="submit" class="submit-btn">Aanmelding Verzenden</button>
+</form>
+              
             </form>
         </div>
     </div>
@@ -1184,21 +1182,6 @@
         function sluitModal() {
             document.getElementById('adoptModal').style.display = 'none';
             document.getElementById('adoptForm').reset();
-        }
-
-        function verwerkVerzenden(event) {
-            event.preventDefault();
-            const fid = document.getElementById('kraanFid').value;
-            const naam = document.getElementById('naam').value;
-            alert(`Bedankt ${naam}! Je aanvraag voor kraan ${fid} is verzonden.`);
-            sluitModal();
-        }
-
-        function verwerkContactVerzenden(event) {
-            event.preventDefault();
-            const naam = document.getElementById('contactNaam').value;
-            alert(`Bedankt ${naam}! Je bericht is succesvol verzonden. We nemen zo snel mogelijk contact met je op.`);
-            document.getElementById('contactForm').reset();
         }
 
         window.onclick = function(event) {
