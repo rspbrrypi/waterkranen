@@ -766,11 +766,19 @@
             .nav-links.active {
                 right: 0;
             }
+            /* --- MOBIELE VERBETERINGEN VOOR DE OVERZICHTSKAART --- */
+            .overview-map-section {
+                min-height: auto !important; /* Voorkomt extreme hoogte op mobiel */
+                margin-bottom: 24px;
+                padding-top: 16px;
+                padding-bottom: 16px;
+            }
 
             #main-overview-map {
-                height: 320px;
+                height: 350px; /* Comfortabele hoogte voor mobiel */
+                border-radius: 12px;
             }
-        }
+       }
     </style>
 </head>
 <body>
@@ -939,10 +947,14 @@
         }
 
         // --- HOOFD OVERZICHTSKAART INITIALISEREN ---
+        // Check of de gebruiker op een mobiel apparaat zit
+        const isMobile = window.innerWidth <= 640;
         const mainOverviewMap = L.map('main-overview-map', {
-            zoomControl: true
+         zoomControl: true,
+         // Schakel dragging uit op mobiel om te voorkomen dat de gebruiker vastkomt te zitten tijdens het scrollen van de pagina
+         dragging: !isMobile, 
+         tap: !isMobile
         }).setView([52.3936, 4.9009], 12);
-
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap'
