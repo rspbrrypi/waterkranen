@@ -776,7 +776,7 @@
 
             #main-overview-map {
                 height: 350px; /* Comfortabele hoogte voor mobiel */
-                border-radius: 12px;
+               /* border-radius: 12px;*/
             }
        }
     </style>
@@ -950,10 +950,9 @@
         // Check of de gebruiker op een mobiel apparaat zit
         const isMobile = window.innerWidth <= 640;
         const mainOverviewMap = L.map('main-overview-map', {
-         zoomControl: true,
-         // Schakel dragging uit op mobiel om te voorkomen dat de gebruiker vastkomt te zitten tijdens het scrollen van de pagina
-         dragging: !isMobile, 
-         tap: !isMobile
+            zoomControl: true,
+            dragging: !L.Browser.mobile, // Schakelt pannen met 1 vinger uit op mobiel
+            tap: !L.Browser.mobile
         }).setView([52.3936, 4.9009], 12);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
             maxZoom: 19,
