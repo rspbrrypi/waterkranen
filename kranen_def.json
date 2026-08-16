@@ -1,4 +1,42 @@
 [
+   {
+        "FID": "rivm_drinkwaterkranen_actueel.tijd_hkswrdpln 2",
+        "geom": "POINT ()",
+        "beschrijvi": "Watertappunt Hoekschewaardplein 2, Amsterdam.",
+        "latitude": "52.3919375",
+        "longitude": "4.9278977",
+        "plaats": "Amsterdam",
+        "x": "",
+        "y": "",
+        "type": "Regulier, 24-7 open",
+        "foto": "Hoekschewaardplein.webp"        
+    },
+    {
+        "FID": "rivm_drinkwaterkranen_actueel.tijd_wtrgseweg",
+        "geom": "POINT ()",
+        "beschrijvi": "Watertappunt Watergangseweg 46, Amsterdam.",
+        "latitude": "52.3920927",
+        "longitude": "4.9478854",
+        "plaats": "Amsterdam",
+        "x": "",
+        "y": "",
+        "type": "Regulier, 24-7 open",
+        "foto": "Watergangseweg.webp"
+        
+    },
+    {
+        "FID": "rivm_drinkwaterkranen_actueel.tijd_ilpendmmrstr",
+        "geom": "POINT ()",
+        "beschrijvi": "Watertappunt Ilpendammerstraat 45, Amsterdam.",
+        "latitude": "52.3924027",
+        "longitude": "4.9454804",
+        "plaats": "Amsterdam",
+        "x": "",
+        "y": "",
+        "type": "Regulier, 24-7 open",
+        "foto": "Ilpendammerstraat.webp"
+        
+    },
   {
     "FID": "rivm_drinkwaterkranen_actueel.3",
     "geom": "POINT (122279.51582166144 490870.82035553874)",
