@@ -38,6 +38,19 @@
         "foto": "Ilpendammerstraat.webp",
         "status": ""
     },
+     {
+        "FID": "rivm_drinkwaterkranen_actueel.4004",
+        "geom": "POINT ()",
+        "beschrijvi": "Watertappunt Johan van Hasseltweg 21, Amsterdam.",
+        "latitude": "52.38495",
+        "longitude": "4.930353",
+        "plaats": "Amsterdam",
+        "x": "",
+        "y": "",
+        "type": "Regulier, 24-7 open",
+        "foto": "Verbroederij.webp",
+        "status": ""
+    },
     {
         "FID": "rivm_drinkwaterkranen_actueel.3",
         "geom": "POINT (122279.51582166144 490870.82035553874)",
