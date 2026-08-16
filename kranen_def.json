@@ -4332,6 +4332,18 @@
     "foto": ""
   },
   {
+    "FID": "rivm_drinkwaterkranen_actueel.2802",
+    "geom": "POINT (123463.5242 490321.5649)",
+    "beschrijvi": "Watertap Atletiekbaan Atos, Amsterdam.",
+    "latitude": "52.3998251",
+    "longitude": "4.9238305",
+    "plaats": "Amsterdam",
+    "x": "123463.524",
+    "y": "490321.565",
+    "type": "Regulier, 24-7 open",
+    "foto": "Elzenhagenpad.webp"
+  },
+  {
     "FID": "rivm_drinkwaterkranen_actueel.3045",
     "geom": "POINT (127337.08054560922 485286.67186953954)",
     "beschrijvi": "Watertappunt Dick Hilleniuspad, Amsterdam.",
