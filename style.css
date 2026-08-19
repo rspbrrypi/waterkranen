@@ -513,7 +513,7 @@ body {
 /* --- EXTRA INFO SECTIE --- */
 .divider {
     background-color: #e0f2fe;
-    padding: 20px;
+    padding: 20px 0 20px 0;
 }
 
 .divider2 {
