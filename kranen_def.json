@@ -1,5 +1,19 @@
 [
     {
+        "FID": "rivm_drinkwaterkranen_actueel.4000",
+        "geom": "POINT ()",
+        "beschrijvi": "Watertappunt Nwe Leeuwarderweg 15, Amsterdam.",
+        "latitude": "52.39403697594524",
+        "longitude": "4.9229630241583155",
+        "plaats": "Amsterdam",
+        "x": "",
+        "y": "",
+        "type": "Regulier, 24-7 open",
+        "foto": "rozetanker.webp",
+        "status": ""
+    },
+ 
+    {
         "FID": "rivm_drinkwaterkranen_actueel.4001",
         "geom": "POINT ()",
         "beschrijvi": "Watertappunt Hoekschewaardplein 2, Amsterdam.",
