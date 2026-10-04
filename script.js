@@ -40,7 +40,7 @@ const mainOverviewMap = L.map('main-overview-map', {
     tap: true
 }).setView([52.3936, 4.9009], 12);
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_49rd_1_9caca4fc858cc8753a39d1c6', {
     maxZoom: 19,
     attribution: '&copy; OpenStreetMap'
 }).addTo(mainOverviewMap);
@@ -249,7 +249,7 @@ fetch('kranen_def.json')
                     doubleClickZoom: false
                 }).setView([validLat, validLng], 14);
 
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_49rd_1_9caca4fc858cc8753a39d1c6', {
                     maxZoom: 19
                 }).addTo(map);
 
